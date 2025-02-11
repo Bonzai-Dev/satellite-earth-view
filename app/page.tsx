@@ -1,9 +1,9 @@
-import ThreeScene from "./components/earth/earth.module";
+import Earth from "./components";
 
 export default function Home() {
   return (
     <main>
-      <ThreeScene />
+      <Earth />
     </main>
   );
 }
