@@ -1,2 +1,2 @@
-import Scene from "./scene/scene.module";
+import Scene from "./scene";
 export default Scene;
