@@ -4,8 +4,8 @@ import { Canvas } from "@react-three/fiber";
 import { Suspense } from "react";
 import { Stats, OrbitControls, Environment } from "@react-three/drei";
 
-import config from "../../config";
-import EarthMesh from "../earth";
+import config from "@/app/config";
+import Earth from "@/app/components/earth";
 
 export default function Scene() {
   return (
@@ -26,10 +26,10 @@ export default function Scene() {
             intensity={Math.PI}
           />
 
-          <EarthMesh />
+          <Earth />
         </Suspense>
 
-        <Environment files={config.files.images.environment.space} background />
+        <Environment files={config.files.environment.space} background />
         <Stats />
 
         <OrbitControls
