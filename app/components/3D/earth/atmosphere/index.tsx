@@ -5,8 +5,8 @@ import { useRef } from "react";
 import math from "@/app/utils/math";
 import config from "@/app/config";
 
-import vertexShader from "@/public/assets/shaders/vertex.glsl";
-import fragmentShader from "@/public/assets/shaders/fragment.glsl";
+import vertexShader from "@/public/assets/shaders/atmosphere/vertex.glsl";
+import fragmentShader from "@/public/assets/shaders/atmosphere/fragment.glsl";
 
 export default function AtmosphereMesh() {
   const atmosphereRef = useRef<Mesh>(null!);
