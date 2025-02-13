@@ -5,11 +5,13 @@ import { useRef } from "react";
 import math from "@/app/utils/math";
 import config from "@/app/config";
 
+import cloudsAlbedoMap from "@/public/assets/img/earth/clouds.png"
+
 export default function CloudMesh() {
   const cloudsRef = useRef<Mesh>(null!);
   const alphaMap = useLoader(
     TextureLoader,
-    config.files.textures.clouds.albedoMap
+    cloudsAlbedoMap.src
   );
 
   useFrame((state, delta) => {

@@ -1,28 +1,18 @@
 const config = {
 	earth: {
-		rotationSpeed: 0.1,
+		rotationSpeed: 0.01,
 		geometrySize: 2,
     resolution: 1024,
 
     inclination: -23.5,
-    cloudsRotationSpeed: 0.07,
-	},
+    cloudsRotationSpeed: 0.015,
 
-	files: {
-    environment: {
-      space: "/assets/img/hiptyc_2020_4k_gal.exr",
-    },
-
-    textures: {
-      earth: {
-        albedoMap: "/assets/img/earth/albedo.jpg",
-        bumpMap: "/assets/img/earth/bump.jpg",
-      },
-      clouds: {
-        albedoMap: "/assets/img/earth/clouds.png",
-      },
+    atmosphere: {
+      opacity: { value: 3 },
+      powerFactor: { value: 0.6 },
+      multiplier: { value: 0.5 },
     }
-  },
+	},
 };
 
 export default config;

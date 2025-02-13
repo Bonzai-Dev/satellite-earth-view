@@ -4,8 +4,8 @@ import { Canvas } from "@react-three/fiber";
 import { Suspense } from "react";
 import { Stats, OrbitControls, Environment } from "@react-three/drei";
 
-import config from "@/app/config";
-import Earth from "@/app/components/earth";
+import Earth from "@/app/components/3D/earth";
+import environmentTexture from "@/public/assets/img/hiptyc_2020_4k_gal.exr"; 
 
 export default function Scene() {
   return (
@@ -29,13 +29,14 @@ export default function Scene() {
           <Earth />
         </Suspense>
 
-        <Environment files={config.files.environment.space} background />
+        <Environment files={environmentTexture} background />
         <Stats />
 
         <OrbitControls
-          dampingFactor={0.02}
+          dampingFactor={0.01}
           zoomSpeed={0.5}
           minDistance={2.1}
+          maxDistance={100}
           enablePan
         />
       </Canvas>

@@ -1,4 +1,4 @@
-import Earth from "./components";
+import Earth from "@/app/components";
 
 export default function Home() {
   return (
