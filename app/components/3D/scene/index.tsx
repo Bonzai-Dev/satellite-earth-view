@@ -2,31 +2,32 @@
 import styles from "./index.module.css";
 import { Canvas } from "@react-three/fiber";
 import { Suspense } from "react";
-import { Stats, OrbitControls, Environment } from "@react-three/drei";
+import {
+  Stats,
+  OrbitControls,
+  Environment,
+} from "@react-three/drei";
 
 import Earth from "@/app/components/3D/earth";
-import environmentTexture from "@/public/assets/img/hiptyc_2020_4k_gal.exr"; 
+import environmentTexture from "@/public/assets/img/hiptyc_2020_4k_gal.exr";
+import Satellite from "../satellite";
 
 export default function Scene() {
   return (
     <div className={styles.scene}>
       <Canvas camera={{ position: [0, 0, 5] }}>
         <Suspense fallback={null}>
-          <ambientLight intensity={Math.PI / 2} />
-          <spotLight
+          <ambientLight intensity={1} />
+          {/* <spotLight
             position={[10, 10, 10]}
             angle={0.15}
             penumbra={1}
             decay={0}
-            intensity={Math.PI}
-          />
-          <pointLight
-            position={[-10, -10, -10]}
-            decay={0}
-            intensity={Math.PI}
-          />
+            intensity={2}
+          /> */}
 
           <Earth />
+          <Satellite />
         </Suspense>
 
         <Environment files={environmentTexture} background />

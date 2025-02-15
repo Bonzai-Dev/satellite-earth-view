@@ -1,11 +1,16 @@
 const config = {
 	earth: {
-		rotationSpeed: 0.01,
+		rotationSpeed: 3.2 / 6378,
 		geometrySize: 2,
     resolution: 1024,
 
     inclination: -23.5,
-    cloudsRotationSpeed: 0.015,
+    cloudsRotationSpeed: 3.2 / 6378 + 0.0003,
+
+    ocean: {
+      bumpScale: 0.03,
+      metalness: 0.1,
+    },
 
     atmosphere: {
       opacity: { value: 3 },

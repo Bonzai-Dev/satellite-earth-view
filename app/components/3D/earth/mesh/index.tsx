@@ -1,41 +1,51 @@
-import { TextureLoader, Mesh, Euler, MeshStandardMaterial } from "three";
+import { TextureLoader, Mesh, Euler, MeshStandardMaterial, Clock } from "three";
 import { useFrame, useLoader } from "@react-three/fiber";
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 
 import math from "@/app/utils/math";
 import config from "@/app/config";
 
 import fragmentShader from "@/public/assets/shaders/earth/fragment.glsl";
 
-import earthAlphaMap from "@/public/assets/img/earth/alpha.png";
-import earthAlbedoMap from "@/public/assets/img/earth/albedo.jpg";
-import earthBumpMap from "@/public/assets/img/earth/bump.jpg";
+import earthAlpha from "@/public/assets/img/earth/alpha.png";
+import earthAlbedo from "@/public/assets/img/earth/albedo.jpg";
+import earthBump from "@/public/assets/img/earth/bump.jpg";
 
 export default function EarthMesh() {
   const earthRef = useRef<Mesh>(null!);
 
-  const albedoMap = useLoader(TextureLoader, earthAlbedoMap.src);
-  const bumpMap = useLoader(TextureLoader, earthBumpMap.src);
-  const alphaMap = useLoader(TextureLoader, earthAlphaMap.src);
+  const albedoMap = useLoader(TextureLoader, earthAlbedo.src);
+  const bumpMap = useLoader(TextureLoader, earthBump.src);
+  const alphaMap = useLoader(TextureLoader, earthAlpha.src);
 
   const earthMaterial = new MeshStandardMaterial({
     map: albedoMap,
     bumpMap: bumpMap,
-    bumpScale: 0.03,
     roughnessMap: alphaMap,
-    metalness: 0.1,
     metalnessMap: alphaMap,
+    bumpScale: config.earth.ocean.bumpScale,
+    metalness: config.earth.ocean.metalness,
   });
 
   earthMaterial.onBeforeCompile = function (shader) {
     shader.fragmentShader = shader.fragmentShader.replace(
       "#include <roughnessmap_fragment>",
-      fragmentShader
+      fragmentShader,
     );
   };
 
+  const now = new Date();
+  const secondsSinceMidnight = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+  const initialRotation = (secondsSinceMidnight / 86400) * 2 * Math.PI;
+  const rotationSpeed = (2 * Math.PI) / 86400;
+  
+  useEffect(() => {
+    earthRef.current.rotation.y = initialRotation;
+  }, [initialRotation]);
+
+
   useFrame((state, delta) => {
-    earthRef.current.rotation.y += delta * config.earth.rotationSpeed;
+    earthRef.current.rotation.y += rotationSpeed * delta;
   });
 
   return (
