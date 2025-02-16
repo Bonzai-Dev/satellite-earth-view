@@ -1,33 +1,18 @@
 import { useState, useEffect } from "react";
-import { Detailed, Line } from "@react-three/drei";
-import { Vector3 } from "three";
-import { DetailedSatellite, TleLine1, TleLine2, Vector } from "ootk";
+import { Line, Billboard, Text } from "@react-three/drei";
+import { useLoader } from "@react-three/fiber";
+import { Vector3, TextureLoader, Euler } from "three";
+import { DetailedSatellite, TleLine1, TleLine2 } from "ootk";
 
 import config from "@/app/config";
-import { vec2 } from "three/tsl";
+import satelliteMarker from "@/public/assets/img/Satellite.png";
 
-interface SatelliteData {
-  name: string;
-  tleData: {
-    tleOne: string;
-    tleTwo: string;
-  };
-  noradId: string;
-  country: string;
-  launchDate: string;
-  purpose: string;
-  owner: string;
-  launchSite: string;
-  launchVehicle: string;
-  geographicCoordinates: {
-    lon: number;
-    lat: number;
-    alt: number;
-  };
-}
+import math from "@/app/utils/math";
 
 export default function Satellite() {
-  const [satellitePosition, setSatellitePosition] = useState<Vector3>();
+  const [satelliteCoordinates, setSatelliteCoordinates] = useState<Vector3>(new Vector3());
+  const [satellitePosition, setSatellitePosition] = useState<Vector3>(new Vector3());
+  const [satelliteName, setSatelliteName] = useState<string>("Satellite");
 
   useEffect(() => {
     async function fetchSatellite() {
@@ -40,9 +25,9 @@ export default function Satellite() {
           name: "ISS (ZARYA)",
           tleData: {
             tleOne:
-              "1 25544U 98067A   25046.66546928  .00014234  00000-0  25559-3 0  9996",
+              "1 00900U 64063C   25047.58174728  .00001043  00000-0  10668-2 0  9999",
             tleTwo:
-              "2 25544  51.6396 188.9093 0004418 323.8501 155.7067 15.50144684496311",
+              "2 00900  90.2072  60.6864 0024169 326.3522 155.1313 13.75817356  4634",
           },
           noradId: "25544",
           country: "United States",
@@ -60,29 +45,59 @@ export default function Satellite() {
           tle2: data.tleData.tleTwo as TleLine2,
         });
 
-        setSatellitePosition(
+        setSatelliteCoordinates(
           new Vector3(
-            config.earth.geometrySize + detailedSatellite.lla().lon / 3185.5,
-            config.earth.geometrySize + detailedSatellite.lla().alt / 3185.5,
-            config.earth.geometrySize + detailedSatellite.lla().lat / 3185.5
+            detailedSatellite.lla().lon,
+            detailedSatellite.lla().lat,
+            detailedSatellite.lla().alt
           )
         );
+
+        setSatellitePosition(
+          new Vector3().setFromSphericalCoords(
+            config.earth.radius + detailedSatellite.lla().alt / 3185.5,
+            Math.PI / 2 - math.toRadians(detailedSatellite.lla().lat),
+            math.toRadians(detailedSatellite.lla().lon),
+          )
+        );
+        setSatelliteName(data.name);
       } catch (error) {
         console.error(error);
       }
     }
 
     fetchSatellite();
-  }, [satellitePosition]);
-
+    const interval = setInterval(fetchSatellite, 1000);
+    return () => clearInterval(interval);
+  }, []);
   if (!satellitePosition) return null;
 
   return (
-    <mesh
-      position={satellitePosition}
-    >
-      <sphereGeometry args={[0.05, 32, 32]} />
-      <meshBasicMaterial color="red" opacity={0.8} transparent />
-    </mesh>
+    <>
+      <mesh position={satellitePosition.applyEuler(new Euler(config.earth.inclination, 0, 0))}>
+        <Billboard>
+          <mesh>
+            <planeGeometry args={[0.05, 0.05]} />
+            <meshBasicMaterial
+              map={useLoader(TextureLoader, satelliteMarker.src)}
+              color={0xe80000}
+              transparent
+            />
+          </mesh>
+        </Billboard>
+
+        <Billboard>
+          <Text fontSize={0.05} color="white" position={[0, 0.05, 0]}>
+            {satelliteName}
+          </Text>
+
+          <Text fontSize={0.03} color="white">
+            {`${Math.floor(satelliteCoordinates.z * 100) / 100} km`}
+          </Text>
+        </Billboard>
+      </mesh>
+
+      <Line points={[satellitePosition, new Vector3(0, 0, 0)]} color="white" />
+    </>
   );
 }

@@ -30,20 +30,18 @@ export default function EarthMesh() {
   earthMaterial.onBeforeCompile = function (shader) {
     shader.fragmentShader = shader.fragmentShader.replace(
       "#include <roughnessmap_fragment>",
-      fragmentShader,
+      fragmentShader
     );
   };
 
-  const now = new Date();
-  const secondsSinceMidnight = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
-  const initialRotation = (secondsSinceMidnight / 86400) * 2 * Math.PI;
-  const rotationSpeed = (2 * Math.PI) / 86400;
-  
   useEffect(() => {
+    const now = new Date();
+    const secondsSinceMidnight = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+    const initialRotation = (secondsSinceMidnight / 86400) * Math.PI * 2.1;
     earthRef.current.rotation.y = initialRotation;
-  }, [initialRotation]);
-
-
+  }, []);
+  
+  const rotationSpeed = (2 * Math.PI) / 86400;
   useFrame((state, delta) => {
     earthRef.current.rotation.y += rotationSpeed * delta;
   });
@@ -56,7 +54,7 @@ export default function EarthMesh() {
     >
       <sphereGeometry
         args={[
-          config.earth.geometrySize,
+          config.earth.radius,
           config.earth.resolution,
           config.earth.resolution,
         ]}

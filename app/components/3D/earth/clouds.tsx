@@ -25,7 +25,7 @@ export default function CloudMesh() {
     >
       <sphereGeometry
         args={[
-          config.earth.geometrySize + 0.005,
+          config.earth.radius + 0.005,
           config.earth.resolution,
           config.earth.resolution,
         ]}

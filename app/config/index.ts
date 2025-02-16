@@ -1,11 +1,10 @@
 const config = {
 	earth: {
-		rotationSpeed: 3.2 / 6378,
-		geometrySize: 2,
+		radius: 4,
     resolution: 1024,
 
-    inclination: -23.5,
-    cloudsRotationSpeed: 3.2 / 6378 + 0.0003,
+    inclination: -0, // -23.5
+    cloudsRotationSpeed: 0.0008,
 
     ocean: {
       bumpScale: 0.03,

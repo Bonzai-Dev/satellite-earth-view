@@ -14,7 +14,7 @@ import Satellite from "../satellite";
 
 export default function Scene() {
   return (
-    <div className={styles.scene}>
+    <div className={`${styles.scene}`}>
       <Canvas camera={{ position: [0, 0, 5] }}>
         <Suspense fallback={null}>
           <ambientLight intensity={1} />
@@ -36,7 +36,6 @@ export default function Scene() {
         <OrbitControls
           dampingFactor={0.01}
           zoomSpeed={0.5}
-          minDistance={2.1}
           maxDistance={100}
           enablePan
         />
