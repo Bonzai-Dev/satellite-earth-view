@@ -1,4 +1,4 @@
-Yes i know the code sucks, i rushed the entire project
+This project uses an api that i wrote to demonstrate its get request and yes i know the code sucks, i rushed the entire project
 
 ## Sources:
 [Space HDRI](https://svs.gsfc.nasa.gov/4851#media_group_319121)
