@@ -1,63 +1,66 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Line, Billboard, Text } from "@react-three/drei";
 import { useLoader } from "@react-three/fiber";
-import { Vector3, TextureLoader, Euler } from "three";
+import { Vector3, TextureLoader } from "three";
 import { DetailedSatellite, TleLine1, TleLine2 } from "ootk";
-
-import config from "@/app/config";
 import satelliteMarker from "@/public/assets/img/Satellite.png";
-
 import math from "@/app/utils/math";
 
-export default function Satellite() {
-  const [satelliteCoordinates, setSatelliteCoordinates] = useState<Vector3>(new Vector3());
-  const [satellitePosition, setSatellitePosition] = useState<Vector3>(new Vector3());
+import config from "@/app/config";
+
+type SatelliteProps = {
+  onCoordinatesUpdate?: (coords: Vector3) => void;
+  satelliteId: string;
+};
+
+export default function Satellite({
+  onCoordinatesUpdate,
+  satelliteId,
+}: SatelliteProps) {
+  const [satelliteCoordinates, setSatelliteCoordinates] = useState<Vector3>(
+    new Vector3()
+  );
+  const [satellitePosition, setSatellitePosition] = useState<Vector3>(
+    new Vector3()
+  );
   const [satelliteName, setSatelliteName] = useState<string>("Satellite");
+  const [data, setSatelliteData] = useState<any>(null);
 
   useEffect(() => {
-    async function fetchSatellite() {
+    async function fetchData() {
       try {
-        // const res = await fetch(
-        //   "http://192.168.0.112:3000/api/get/satellites/search/25544"
-        // );
-        // const data: SatelliteData = await res.json();
-        const data = {
-          name: "ISS (ZARYA)",
-          tleData: {
-            tleOne:
-              "1 00900U 64063C   25047.58174728  .00001043  00000-0  10668-2 0  9999",
-            tleTwo:
-              "2 00900  90.2072  60.6864 0024169 326.3522 155.1313 13.75817356  4634",
-          },
-          noradId: "25544",
-          country: "United States",
-          launchDate: "1998-11-20",
-          purpose: "Space Station",
-          owner: "NASA",
-          launchSite: "Baikonur Cosmodrome",
-          launchVehicle: "Proton",
-          geographicCoordinates: { lon: 0, lat: 0, alt: 0 },
-        };
+        const res = await fetch(`${config.api}${satelliteId}`);
+        const data = await res.json();
+        setSatelliteData(data);
+        console.log("Fetching data")
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    fetchData();
+  }, [satelliteId]);
 
+  useEffect(() => {
+    function parseSatelliteData() {
+      try {
         const detailedSatellite = new DetailedSatellite({
           id: parseInt(data.noradId),
           tle1: data.tleData.tleOne as TleLine1,
           tle2: data.tleData.tleTwo as TleLine2,
         });
 
-        setSatelliteCoordinates(
-          new Vector3(
-            detailedSatellite.lla().lon,
-            detailedSatellite.lla().lat,
-            detailedSatellite.lla().alt
-          )
-        );
+        const lla = detailedSatellite.lla();
 
+        const newCoordinates = new Vector3(lla.lon, lla.lat, lla.alt);
+        setSatelliteCoordinates(newCoordinates);
+        if (onCoordinatesUpdate) onCoordinatesUpdate(newCoordinates);
+
+        const radius = 100;
         setSatellitePosition(
           new Vector3().setFromSphericalCoords(
-            config.earth.radius + detailedSatellite.lla().alt / 3185.5,
-            Math.PI / 2 - math.toRadians(detailedSatellite.lla().lat),
-            math.toRadians(detailedSatellite.lla().lon),
+            radius + (lla.alt * radius) / 6371,
+            Math.PI / 2 - math.toRadians(lla.lat),
+            math.toRadians(lla.lon)
           )
         );
         setSatelliteName(data.name);
@@ -66,18 +69,19 @@ export default function Satellite() {
       }
     }
 
-    fetchSatellite();
-    const interval = setInterval(fetchSatellite, 1000);
+    parseSatelliteData();
+    const interval = setInterval(parseSatelliteData, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [onCoordinatesUpdate, data]);
+
   if (!satellitePosition) return null;
 
   return (
     <>
-      <mesh position={satellitePosition.applyEuler(new Euler(config.earth.inclination, 0, 0))}>
+      <mesh position={satellitePosition}>
         <Billboard>
           <mesh>
-            <planeGeometry args={[0.05, 0.05]} />
+            <planeGeometry args={[2.5, 2.5]} />
             <meshBasicMaterial
               map={useLoader(TextureLoader, satelliteMarker.src)}
               color={0xe80000}
@@ -87,11 +91,10 @@ export default function Satellite() {
         </Billboard>
 
         <Billboard>
-          <Text fontSize={0.05} color="white" position={[0, 0.05, 0]}>
+          <Text fontSize={5} color="white" position={[0, 5, 0]}>
             {satelliteName}
           </Text>
-
-          <Text fontSize={0.03} color="white">
+          <Text fontSize={3} color="white">
             {`${Math.floor(satelliteCoordinates.z * 100) / 100} km`}
           </Text>
         </Billboard>

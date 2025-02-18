@@ -1,2 +1,2 @@
-import ControlMenu from "./ControlMenu";
-export { ControlMenu };
+import ControlPanel from "./ControlPanel";
+export { ControlPanel };

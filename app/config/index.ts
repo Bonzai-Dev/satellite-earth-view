@@ -1,3 +1,4 @@
+import "dotenv/config";
 const config = {
 	earth: {
 		radius: 4,
@@ -17,6 +18,7 @@ const config = {
       multiplier: { value: 0.5 },
     }
 	},
-};
 
+  api: process.env.NEXT_PUBLIC_API
+};
 export default config;
