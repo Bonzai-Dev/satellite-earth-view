@@ -36,7 +36,7 @@ export default function Satellite({
       } catch (error) {
         console.error(error);
       }
-    }
+    } 
     fetchData();
   }, [satelliteId]);
 
